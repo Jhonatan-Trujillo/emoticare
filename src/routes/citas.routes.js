@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/citas.controller');
+const { verificarToken } = require('../middlewares/authMiddleware');
 
-router.post('/', ctrl.agendarCita);                    // POST  /api/v1/citas
-router.get('/', ctrl.listarCitas);                     // GET   /api/v1/citas
-router.get('/:id', ctrl.obtenerCita);                  // GET   /api/v1/citas/:id
-router.patch('/:id/cancelar', ctrl.cancelarCita);      // PATCH /api/v1/citas/:id/cancelar
-router.put('/:id', ctrl.modificarCita);                // PUT   /api/v1/citas/:id
+// Rutas PROTEGIDAS — requieren token JWT
+router.post('/',              verificarToken, ctrl.agendarCita);
+router.get('/',               verificarToken, ctrl.listarCitas);
+router.get('/:id',            verificarToken, ctrl.obtenerCita);
+router.patch('/:id/cancelar', verificarToken, ctrl.cancelarCita);
+router.put('/:id',            verificarToken, ctrl.modificarCita);
 
 module.exports = router;

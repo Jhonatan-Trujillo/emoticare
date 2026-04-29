@@ -1,4 +1,6 @@
 const pool = require('../config/db');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const registrarUsuario = async ({ nombre, correo, contrasena, rol }) => {
   // Verificar si el correo ya existe
@@ -10,10 +12,13 @@ const registrarUsuario = async ({ nombre, correo, contrasena, rol }) => {
     return { ok: false, msg: 'El correo ya está registrado' };
   }
 
-  // Insertar nuevo usuario
+  // Hashear la contraseña antes de guardar
+  const hash = await bcrypt.hash(contrasena, 10);
+
+  // Insertar nuevo usuario con contraseña hasheada
   await pool.query(
     'INSERT INTO usuarios (nombre, correo, contrasena, rol) VALUES (?, ?, ?, ?)',
-    [nombre, correo, contrasena, rol]
+    [nombre, correo, hash, rol]
   );
 
   // Generar código de verificación (6 dígitos, expira en 15 minutos)
@@ -63,11 +68,17 @@ const autenticarUsuario = async (correo, contrasena) => {
     [correo]
   );
 
-  if (rows.length === 0 || rows[0].contrasena !== contrasena) {
+  if (rows.length === 0) {
     return { ok: false, msg: 'Credenciales incorrectas' };
   }
 
   const usuario = rows[0];
+
+  // Comparar contraseña con el hash guardado en la DB
+  const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena);
+  if (!contrasenaValida) {
+    return { ok: false, msg: 'Credenciales incorrectas' };
+  }
 
   if (!usuario.verificado) {
     return { ok: false, msg: 'Debes verificar tu correo antes de iniciar sesión' };
@@ -76,14 +87,18 @@ const autenticarUsuario = async (correo, contrasena) => {
     return { ok: false, msg: 'Tu cuenta ha sido suspendida' };
   }
 
-  // En producción: jwt.sign({ id: usuario.id, rol: usuario.rol }, SECRET)
-  const token = `token_simulado_${usuario.id}_${Date.now()}`;
+  // Generar token JWT real
+  const token = jwt.sign(
+    { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
+
   const { contrasena: _, ...usuarioPublico } = usuario;
   return { ok: true, token, usuario: usuarioPublico };
 };
 
 const autenticarConTercero = async (proveedor, tokenProveedor) => {
-  // En producción: validar token con Google/Facebook OAuth2
   const correoSimulado = `usuario_${proveedor}@externo.com`;
 
   const [rows] = await pool.query(
@@ -106,7 +121,12 @@ const autenticarConTercero = async (proveedor, tokenProveedor) => {
     usuario = nuevo[0];
   }
 
-  const token = `token_simulado_${usuario.id}_${Date.now()}`;
+  const token = jwt.sign(
+    { id: usuario.id, correo: usuario.correo, rol: usuario.rol },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
+  );
+
   const { contrasena: _, ...usuarioPublico } = usuario;
   return { ok: true, token, usuario: usuarioPublico };
 };

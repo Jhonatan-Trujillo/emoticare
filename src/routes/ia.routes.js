@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/ia.controller');
+const { verificarToken } = require('../middlewares/authMiddleware');
 
-router.post('/mensaje', ctrl.enviarMensaje);    // POST /api/v1/ia/mensaje
-router.get('/historial', ctrl.historialIA);     // GET  /api/v1/ia/historial
+// Rutas PROTEGIDAS — requieren token JWT
+router.post('/mensaje',   verificarToken, ctrl.enviarMensaje);
+router.get('/historial',  verificarToken, ctrl.historialIA);
 
 module.exports = router;

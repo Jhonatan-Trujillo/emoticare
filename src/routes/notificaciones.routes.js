@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/notificaciones.controller');
+const { verificarToken } = require('../middlewares/authMiddleware');
 
-router.get('/', ctrl.listarNotificaciones);             // GET   /api/v1/notificaciones
-router.patch('/:id/leer', ctrl.marcarLeida);            // PATCH /api/v1/notificaciones/:id/leer
+// Rutas PROTEGIDAS — requieren token JWT
+router.get('/',             verificarToken, ctrl.listarNotificaciones);
+router.patch('/:id/leer',   verificarToken, ctrl.marcarLeida);
 
 module.exports = router;

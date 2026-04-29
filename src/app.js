@@ -1,10 +1,16 @@
 const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const { manejarErrores } = require('./middlewares/authMiddleware');
+
 const app = express();
- 
-// Middleware para parsear JSON
+
+// ─── Middlewares globales ───
+app.use(cors());
+app.use(morgan('dev'));
 app.use(express.json());
- 
-// Rutas
+
+// ─── Rutas ───
 const authRouter           = require('./routes/auth.routes');
 const usuariosRouter       = require('./routes/usuarios.routes');
 const especialistasRouter  = require('./routes/especialistas.routes');
@@ -15,7 +21,7 @@ const chatRouter           = require('./routes/chat.routes');
 const iaRouter             = require('./routes/ia.routes');
 const notificacionesRouter = require('./routes/notificaciones.routes');
 const adminRouter          = require('./routes/admin.routes');
- 
+
 app.use('/api/v1/auth',            authRouter);
 app.use('/api/v1/usuarios',        usuariosRouter);
 app.use('/api/v1/especialistas',   especialistasRouter);
@@ -26,5 +32,8 @@ app.use('/api/v1/chat',            chatRouter);
 app.use('/api/v1/ia',              iaRouter);
 app.use('/api/v1/notificaciones',  notificacionesRouter);
 app.use('/api/v1/admin',           adminRouter);
- 
+
+// ─── Middleware de errores global — siempre al final ───
+app.use(manejarErrores);
+
 module.exports = app;
