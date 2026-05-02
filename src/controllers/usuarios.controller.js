@@ -1,11 +1,8 @@
 const UsuariosModel = require('../models/usuarios.model');
 
-const obtenerPerfil = async (req, res) => {
+const obtenerPerfil = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
+    const usuarioId = req.usuario.id;
 
     const usuario = await UsuariosModel.buscarPorId(usuarioId);
     if (!usuario) {
@@ -14,17 +11,13 @@ const obtenerPerfil = async (req, res) => {
 
     res.json({ ok: true, data: usuario });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
-const actualizarPerfil = async (req, res) => {
+const actualizarPerfil = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
-
+    const usuarioId = req.usuario.id;
     const { nombre, telefono, fotoPerfil } = req.body;
 
     if (nombre !== undefined && nombre.trim() === '') {
@@ -38,7 +31,7 @@ const actualizarPerfil = async (req, res) => {
 
     res.json({ ok: true, data: resultado.usuario });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 

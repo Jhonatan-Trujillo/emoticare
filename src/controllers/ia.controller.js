@@ -1,13 +1,10 @@
 const IAModel = require('../models/ia.model');
 
-const enviarMensaje = async (req, res) => {
+const enviarMensaje = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
-
+    const usuarioId = req.usuario.id;
     const { mensaje } = req.body;
+
     if (!mensaje || mensaje.trim() === '') {
       return res.status(400).json({ ok: false, msg: 'El mensaje no puede estar vacío' });
     }
@@ -15,16 +12,13 @@ const enviarMensaje = async (req, res) => {
     const respuesta = await IAModel.generarRespuesta(usuarioId, mensaje);
     res.json({ ok: true, data: respuesta });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
-const historialIA = async (req, res) => {
+const historialIA = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
+    const usuarioId = req.usuario.id;
 
     const historial = await IAModel.obtenerHistorial(usuarioId);
     if (!historial.length) {
@@ -33,7 +27,7 @@ const historialIA = async (req, res) => {
 
     res.json({ ok: true, data: historial });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 

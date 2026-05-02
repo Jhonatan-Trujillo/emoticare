@@ -1,13 +1,10 @@
 const CitasModel = require('../models/citas.model');
 
-const agendarCita = async (req, res) => {
+const agendarCita = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
-
+    const usuarioId = req.usuario.id;
     const { especialistaId, fecha, hora, modalidad } = req.body;
+
     if (!especialistaId || !fecha || !hora || !modalidad) {
       return res.status(400).json({ ok: false, msg: 'Faltan campos: especialistaId, fecha, hora, modalidad' });
     }
@@ -19,31 +16,25 @@ const agendarCita = async (req, res) => {
 
     res.status(201).json({ ok: true, data: resultado.cita });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
-const listarCitas = async (req, res) => {
+const listarCitas = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
-
+    const usuarioId = req.usuario.id;
     const { estado, fechaInicio, fechaFin } = req.query;
+
     const citas = await CitasModel.listarPorUsuario(usuarioId, { estado, fechaInicio, fechaFin });
     res.json({ ok: true, data: citas });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
-const obtenerCita = async (req, res) => {
+const obtenerCita = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
+    const usuarioId = req.usuario.id;
 
     const cita = await CitasModel.buscarPorId(req.params.id, usuarioId);
     if (!cita) {
@@ -52,16 +43,13 @@ const obtenerCita = async (req, res) => {
 
     res.json({ ok: true, data: cita });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
-const cancelarCita = async (req, res) => {
+const cancelarCita = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
+    const usuarioId = req.usuario.id;
 
     const resultado = await CitasModel.cancelar(req.params.id, usuarioId);
     if (!resultado.ok) {
@@ -70,18 +58,15 @@ const cancelarCita = async (req, res) => {
 
     res.json({ ok: true, msg: 'Cita cancelada correctamente.', data: resultado.cita });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
-const modificarCita = async (req, res) => {
+const modificarCita = async (req, res, next) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
-
+    const usuarioId = req.usuario.id;
     const { fecha, hora, modalidad } = req.body;
+
     const resultado = await CitasModel.modificar(req.params.id, usuarioId, { fecha, hora, modalidad });
     if (!resultado.ok) {
       return res.status(400).json(resultado);
@@ -89,7 +74,7 @@ const modificarCita = async (req, res) => {
 
     res.json({ ok: true, data: resultado.cita });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
