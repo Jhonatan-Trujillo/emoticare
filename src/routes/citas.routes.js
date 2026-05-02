@@ -7,7 +7,7 @@ const { verificarToken } = require('../middlewares/authMiddleware');
 router.post('/',              verificarToken, ctrl.agendarCita);
 router.get('/',               verificarToken, ctrl.listarCitas);
 router.get('/:id',            verificarToken, ctrl.obtenerCita);
-router.patch('/:id/cancelar', verificarToken, ctrl.cancelarCita);
+router.put('/:id/cancelar', verificarToken, ctrl.cancelarCita);
 router.put('/:id',            verificarToken, ctrl.modificarCita);
 
 module.exports = router;
