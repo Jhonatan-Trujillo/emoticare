@@ -31,4 +31,5 @@ const historialIA = async (req, res, next) => {
   }
 };
 
+
 module.exports = { enviarMensaje, historialIA };

@@ -78,4 +78,5 @@ const modificarCita = async (req, res, next) => {
   }
 };
 
+
 module.exports = { agendarCita, listarCitas, obtenerCita, cancelarCita, modificarCita };

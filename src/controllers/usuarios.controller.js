@@ -35,4 +35,5 @@ const actualizarPerfil = async (req, res, next) => {
   }
 };
 
+
 module.exports = { obtenerPerfil, actualizarPerfil };
