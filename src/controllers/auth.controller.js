@@ -18,7 +18,7 @@ const registro = async (req, res) => {
 
     res.status(201).json({ ok: true, msg: 'Usuario registrado. Revisa tu correo para verificar la cuenta.' });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
@@ -37,7 +37,7 @@ const verificarCorreo = async (req, res) => {
 
     res.json({ ok: true, msg: 'Correo verificado. Cuenta activada correctamente.' });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
@@ -56,7 +56,7 @@ const login = async (req, res) => {
 
     res.json({ ok: true, token: resultado.token, data: resultado.usuario });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
@@ -75,7 +75,7 @@ const loginTercero = async (req, res) => {
 
     res.json({ ok: true, token: resultado.token, data: resultado.usuario });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 

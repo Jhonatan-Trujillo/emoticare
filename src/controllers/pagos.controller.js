@@ -2,10 +2,7 @@ const PagosModel = require('../models/pagos.model');
 
 const procesarPago = async (req, res) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
+    const usuarioId = req.usuario.id
 
     const { citaId, metodoPago } = req.body;
     if (!citaId || !metodoPago) {
@@ -19,21 +16,18 @@ const procesarPago = async (req, res) => {
 
     res.status(201).json({ ok: true, data: resultado.transaccion });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
 const historialPagos = async (req, res) => {
   try {
-    const usuarioId = req.headers['x-usuario-id'];
-    if (!usuarioId) {
-      return res.status(401).json({ ok: false, msg: 'No autorizado. Token requerido.' });
-    }
-
+    const usuarioId = req.usuario.id
+    
     const historial = await PagosModel.historialPorUsuario(usuarioId);
     res.json({ ok: true, data: historial });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
