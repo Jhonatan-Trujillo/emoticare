@@ -6,7 +6,7 @@ const listarEspecialistas = async (req, res) => {
     const lista = await EspecialistasModel.listar({ nombre, especialidad, condicion, modalidad });
     res.json({ ok: true, data: lista });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
@@ -18,7 +18,7 @@ const obtenerEspecialista = async (req, res) => {
     }
     res.json({ ok: true, data: especialista });
   } catch (err) {
-    res.status(500).json({ ok: false, msg: err.message });
+    next(err);
   }
 };
 
