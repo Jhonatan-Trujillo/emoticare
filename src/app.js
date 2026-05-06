@@ -1,9 +1,23 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const { manejarErrores } = require('./middlewares/authMiddleware');
-
+ 
 const app = express();
+ 
+// ─── Middlewares de seguridad ───
+app.use(helmet());
+app.use(cors());
+ 
+// ─── Rate limiting — máximo 100 peticiones cada 15 minutos por IP ───
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { ok: false, msg: 'Demasiadas peticiones. Intenta de nuevo en 15 minutos.' }
+});
+app.use(limiter);
 
 // ─── Middlewares globales ───
 app.use(cors());
