@@ -9,7 +9,9 @@ const app = express();
  
 // ─── Middlewares de seguridad ───
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
  
 // ─── Rate limiting — máximo 100 peticiones cada 15 minutos por IP ───
 const limiter = rateLimit({
@@ -20,7 +22,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // ─── Middlewares globales ───
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173'
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 
