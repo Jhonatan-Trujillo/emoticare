@@ -1,8 +1,8 @@
 import Home from './pages/Home';
 import EspecialistasPage from './pages/EspecialistasPage';
+import AdminEspecialistasPage from './pages/AdminEspecialistasPage';
 
 function App() {
-  // Enrutamiento simple sin React Router
   const ruta = window.location.pathname;
 
   const renderPagina = () => {
@@ -11,6 +11,8 @@ function App() {
         return <Home />;
       case '/especialistas':
         return <EspecialistasPage />;
+      case '/admin/especialistas':
+        return <AdminEspecialistasPage />;
       default:
         return <Home />;
     }
