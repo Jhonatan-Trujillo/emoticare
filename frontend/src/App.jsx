@@ -2,6 +2,7 @@ import Home from './pages/Home';
 import EspecialistasPage from './pages/EspecialistasPage';
 import AdminEspecialistasPage from './pages/AdminEspecialistasPage';
 
+
 function App() {
   const ruta = window.location.pathname;
 
