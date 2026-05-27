@@ -65,7 +65,13 @@ export default function AdminEspecialistasPage() {
       setEditandoId(null);
       cargar();
     } catch (err) {
-      setError('Error al guardar. Verifica el token de admin.');
+      const status = err?.response?.status;
+      if (status === 401 || status === 403) {
+        localStorage.removeItem('token');
+        window.location.href = '/admin/login';
+      } else {
+        setError('Error al guardar. Intenta de nuevo.');
+      }
     }
   };
 

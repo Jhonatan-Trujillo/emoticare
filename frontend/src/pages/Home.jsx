@@ -87,6 +87,9 @@ export default function Home() {
       {/* Footer */}
       <footer style={styles.footer}>
         <p>© 2026 Emoticare — Todos los derechos reservados</p>
+        <a href="/admin/login" style={styles.adminLink}>
+          Acceso administrativo
+        </a>
       </footer>
     </div>
   );
@@ -241,5 +244,12 @@ const styles = {
     backgroundColor: '#0d47a1',
     color: '#90caf9',
     fontSize: '14px',
+  },
+  adminLink: {
+  color: '#4a6fa5',
+  fontSize: '12px',
+  textDecoration: 'none',
+  marginTop: '8px',
+  display: 'inline-block',
   },
 };
