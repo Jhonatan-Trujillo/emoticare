@@ -7,7 +7,9 @@ import {
 } from '../services/especialistas.service';
 
 const formVacio = {
-  usuarioId: '',
+  nombre: '',
+  correo: '',
+  contrasena: '',
   especialidad: '',
   condiciones: '',
   modalidad: 'online',
@@ -67,17 +69,19 @@ export default function AdminEspecialistasPage() {
     }
   };
 
-  const handleEditar = (especialista) => {
-    setEditandoId(especialista.id);
-    setForm({
-      usuarioId: especialista.usuario_id || '',
-      especialidad: especialista.especialidad || '',
-      condiciones: especialista.condiciones || '',
-      modalidad: especialista.modalidad || 'online',
-      precioPorHora: especialista.precio_por_hora || '',
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+const handleEditar = (especialista) => {
+  setEditandoId(especialista.id);
+  setForm({
+    nombre: '',
+    correo: '',
+    contrasena: '',
+    especialidad: especialista.especialidad || '',
+    condiciones: especialista.condiciones || '',
+    modalidad: especialista.modalidad || 'online',
+    precioPorHora: especialista.precio_por_hora || '',
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
   const handleEliminar = async (id) => {
     if (!window.confirm('¿Eliminar este especialista?')) return;
@@ -110,14 +114,34 @@ export default function AdminEspecialistasPage() {
         </h2>
         <form onSubmit={handleSubmit} style={styles.form}>
           {!editandoId && (
-            <input
-              name="usuarioId"
-              value={form.usuarioId}
-              onChange={handleChange}
-              placeholder="ID del usuario"
-              style={styles.input}
-              required
-            />
+            <>
+              <input
+                name="nombre"
+                value={form.nombre}
+                onChange={handleChange}
+                placeholder="Nombre completo"
+                style={styles.input}
+                required
+              />
+              <input
+                name="correo"
+                value={form.correo}
+                onChange={handleChange}
+                placeholder="Correo electrónico"
+                type="email"
+                style={styles.input}
+                required
+              />
+              <input
+                name="contrasena"
+                value={form.contrasena}
+                onChange={handleChange}
+                placeholder="Contraseña"
+                type="password"
+                style={styles.input}
+                required
+              />
+            </>
           )}
           <input
             name="especialidad"
