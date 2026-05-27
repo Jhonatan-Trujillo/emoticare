@@ -24,13 +24,13 @@ const obtenerEspecialista = async (req, res, next) => {
 
 const crearEspecialista = async (req, res, next) => {
   try {
-    const { usuarioId, especialidad, condiciones, modalidad, precioPorHora } = req.body;
+    const { nombre, correo, contrasena, especialidad, condiciones, modalidad, precioPorHora } = req.body;
 
-    if (!usuarioId || !especialidad || !modalidad || !precioPorHora) {
-      return res.status(400).json({ ok: false, msg: 'Faltan campos: usuarioId, especialidad, modalidad, precioPorHora' });
+    if (!nombre || !correo || !contrasena || !especialidad || !modalidad || !precioPorHora) {
+      return res.status(400).json({ ok: false, msg: 'Faltan campos: nombre, correo, contrasena, especialidad, modalidad, precioPorHora' });
     }
 
-    const resultado = await EspecialistasModel.crear({ usuarioId, especialidad, condiciones, modalidad, precioPorHora });
+    const resultado = await EspecialistasModel.crear({ nombre, correo, contrasena, especialidad, condiciones, modalidad, precioPorHora });
     if (!resultado.ok) {
       return res.status(400).json(resultado);
     }

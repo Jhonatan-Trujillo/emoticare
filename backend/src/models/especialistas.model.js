@@ -43,32 +43,41 @@ const buscarPorId = async (id) => {
   return rows[0] || null;
 };
 
-const crear = async ({ usuarioId, especialidad, condiciones, modalidad, precioPorHora }) => {
-  // Verificar que el usuario existe
-  const [usuario] = await pool.query(
-    'SELECT id, rol FROM usuarios WHERE id = ?',
-    [usuarioId]
+const crear = async ({ nombre, correo, contrasena, especialidad, condiciones, modalidad, precioPorHora }) => {
+  // Verificar que el correo no esté en uso
+  const [yaUsuario] = await pool.query(
+    'SELECT id FROM usuarios WHERE correo = ?',
+    [correo]
   );
-  if (usuario.length === 0) {
-    return { ok: false, msg: 'El usuario no existe' };
+  if (yaUsuario.length > 0) {
+    return { ok: false, msg: 'Ya existe un usuario con ese correo' };
   }
 
-  // Verificar que el usuario no sea ya un especialista
-  const [yaExiste] = await pool.query(
-    'SELECT id FROM especialistas WHERE usuario_id = ?',
-    [usuarioId]
+  const bcrypt = require('bcrypt');
+  const hash = await bcrypt.hash(contrasena, 10);
+
+  const [resultUsuario] = await pool.query(
+    `INSERT INTO usuarios (nombre, correo, contrasena, rol, verificado, estado)
+     VALUES (?, ?, ?, 'especialista', 1, 'activo')`,
+    [nombre, correo, hash]
   );
-  if (yaExiste.length > 0) {
-    return { ok: false, msg: 'Este usuario ya está registrado como especialista' };
-  }
+
+  const nuevoUsuarioId = resultUsuario.insertId;
 
   const [result] = await pool.query(
     `INSERT INTO especialistas (usuario_id, especialidad, condiciones, modalidad, precio_por_hora, estado)
      VALUES (?, ?, ?, ?, ?, 'aprobado')`,
-    [usuarioId, especialidad, condiciones, modalidad, precioPorHora]
+    [nuevoUsuarioId, especialidad, condiciones, modalidad, precioPorHora]
   );
 
-  const [rows] = await pool.query('SELECT * FROM especialistas WHERE id = ?', [result.insertId]);
+  const [rows] = await pool.query(
+    `SELECT e.id, u.nombre, u.correo, e.especialidad, e.condiciones,
+            e.modalidad, e.precio_por_hora
+     FROM especialistas e
+     JOIN usuarios u ON e.usuario_id = u.id
+     WHERE e.id = ?`,
+    [result.insertId]
+  );
   return { ok: true, data: rows[0] };
 };
 
